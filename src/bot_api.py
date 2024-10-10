@@ -91,6 +91,7 @@ if __name__ == "__main__":
         if github_output:
             with open(github_output, "a") as f:
                 f.write(f"results={json.dumps(results)}\n")
+            print(f"results={json.dumps(results)}\n")
         else:
             print("GITHUB_OUTPUT environment variable not found.")
             print(f"results={json.dumps(results)}\n")
