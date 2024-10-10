@@ -1,0 +1,43 @@
+# Welcome to the GatlingX Hackbot CI Documentation!
+
+GatlingX Hackbot is still in early beta. There may be some stability issues and changes to the product.
+
+This documentation provides a comprehensive guide for using the GatlingX Hackbot CI to integrate to your solidity projects.
+
+## Overview
+
+The Hackbot CI works with any [Foundry](https://book.getfoundry.sh/forge/) project, a command-line tool that tests, builds, and deploys your solidity-based smart contracts. 
+
+
+## 🚀 Quick Start
+
+```sh test copy
+
+
+```
+
+
+### How does it work?
+
+```mermaid
+graph TD;
+
+subgraph AA [Client Side Foundry Project]
+A[Gatling Gun CLI];
+end
+
+subgraph BB [Server Side]
+E[Gatling Gun Fuzzer];
+F[Gatling Gun Foundry];
+end
+
+Z[Gatling Gun API];
+A --> Z;
+Z --> F;
+F --> E;
+```
+
+## 🔑 Get API Key
+
+To get started, you need to sign up on [GatlingX Hackbot](https://hackbot.org) and get an API key.
+
