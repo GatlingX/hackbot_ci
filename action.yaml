@@ -41,5 +41,5 @@ runs:
           --bot_address ${{ inputs.bot_address }} \
           --bot_port ${{ inputs.bot_port }} \
           --token ${{ inputs.token }}
-        echo ${{results}}
+        echo "$results"
 
