@@ -1,32 +1,41 @@
+# Hackbot CI
 
-<p align="center">
-  <img src="https://github.com/GatlingX/GatlingGun-Issues/assets/38335479/a66beb1a-7953-42bb-a30b-01b24417ea1c" alt="2" width="500">
+This action is used to launch the Hackbot service and scan a contract for vurnabilities.
 
-</p>
+## Inputs
 
-<p align="center">
-  <a href="https://x.com/gatling_x">
-    <img src="https://img.shields.io/twitter/follow/gatling_x?style=for-the-badge&logo=x&logoColor=white" alt="Follow us on X">
-  </a>
-  <a href="https://t.me/+DwI1FhzS6hxkZmI0">
-    <img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white&label=join our community" alt="Join our community">
-  </a>
-</p>
+- `bot_address`: The address of the service.
+- `bot_port`: The port of the service.
+- `token`: The token to use to authenticate with the service.
 
-GatlingGun Fuzzer allows you to access the power of our uber-fast EVM SDK.
+## Outputs
 
-# ♨️ GatlingGun (ggun) Issues
+- `results`: The results of the hack.
 
-This repo is designed for raising issues, bugs, and reports related to our GatlingGun (ggun) fuzzer.
+## Example
 
-## ♨️ Getting started
+```yaml
+name: Test Action Workflow
 
+on:
+  workflow_dispatch:
 
-## ♨️ Fuzzer Documentation
+jobs:
+  test-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-## ♨️ Advanced
+      - name: Run Test Action
+        uses: gatlingX/hackbot-ci@main
+        with:
+          bot_address: "localhost"
+          bot_port: "5000"
+          token: "1234567890"
+        id: test-action
 
-## ♨️ Community
-
-Join our [Telegram Community](https://t.me/+DwI1FhzS6hxkZmI0)! We are here to answer questions and help you get the most out of GatlingGun.
-
+      - name: Print output
+        run: |
+          echo "Hack result: ${{ steps.test-action.outputs.results }}"  
+```

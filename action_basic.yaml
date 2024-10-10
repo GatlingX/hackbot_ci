@@ -1,0 +1,76 @@
+name: 'Hackbot CI'
+description: 'Hackbot action'
+
+inputs:
+  bot_address:
+    description: 'The address of the bot to hack'
+    required: false
+    default: 'localhost'
+  bot_port:
+    description: 'The port of the bot to hack'
+    required: false
+    default: '5000'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install aiohttp
+
+    - name: Hack the contract
+      shell: bash
+      run: |
+        # Process the response using Python
+        python3 <<EOF
+        import aiohttp
+        import asyncio
+        import json
+        import os        
+        async def make_request(session, url, data):
+            async with session.post(url, json=data, headers={"Content-Type": "application/json"}) as response:
+                return await response.text()
+
+        async def process_ndjson(ndjson_str):
+            results = []
+            for line in ndjson_str.strip().split('\n'):
+                if line.startswith('data: '):
+                    try:
+                        json_str = line[5:].strip()  # Remove 'data: ' prefix
+                        json_obj = json.loads(json_str)
+                        results.append(json_obj)
+                    except json.JSONDecodeError:
+                        print(f"Failed to parse JSON: {json_str}")
+            return results
+
+        async def main():
+            url = f"http://${{ inputs.bot_address }}:${{ inputs.bot_port }}/api/hack"
+            data = {"repo_url": "https://github.com/${{ github.repository }}"}
+
+            async with aiohttp.ClientSession() as session:
+                response_text = await make_request(session, url, data)
+                results = await process_ndjson(response_text)
+
+            # Append each result to a JSON file
+            with open('results.json', 'w') as f:
+                json.dump(results, f, indent=2)
+
+            return results
+
+        results = asyncio.run(main())
+        github_output = os.environ.get('GITHUB_OUTPUT')
+        if github_output:
+            with open(github_output, 'a') as f:
+                f.write(f"hack_results<<EOF\n{json.dumps(results)}\nEOF\n")
+
+outputs:
+  hack_results:
+    description: "The results of the hack"
+    value: ${{ steps.hack_results.outputs.hack_results }}
