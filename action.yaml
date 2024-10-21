@@ -10,8 +10,8 @@ inputs:
     description: 'The port of the bot to hack'
     required: false
     default: '5000'
-  token:
-    description: 'The token to use to authenticate with the bot'
+  api_key:
+    description: 'The API key to use to authenticate with the bot'
     required: true
 outputs:
   hack_results:
@@ -40,6 +40,6 @@ runs:
         python ${{ github.action_path }}/src/bot_api.py \
           --bot_address ${{ inputs.bot_address }} \
           --bot_port ${{ inputs.bot_port }} \
-          --token ${{ inputs.token }}
+          --api_key ${{ inputs.api_key }}
         echo "$results"
 
