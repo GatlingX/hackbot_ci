@@ -6,7 +6,7 @@ This action is used to launch the Hackbot service and scan a contract for vurnab
 
 - `bot_address`: The address of the service.
 - `bot_port`: The port of the service.
-- `token`: The token to use to authenticate with the service.
+- `api_key`: The api_key to use to authenticate with the service.
 
 ## Outputs
 
@@ -28,11 +28,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Test Action
-        uses: gatlingX/hackbot-ci@main
+        uses: GatlingX/hackbot-ci@main
         with:
           bot_address: "localhost"
           bot_port: "5000"
-          token: "1234567890"
+          api_key: "1234567890"
         id: test-action
 
       - name: Print output
