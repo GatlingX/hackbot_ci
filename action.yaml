@@ -1,5 +1,9 @@
 name: 'Hackbot CI'
 description: 'Hackbot workflow action'
+author: "GatlingX"
+branding:
+  icon: "check-circle"
+  color: "red"
 
 inputs:
   address:
