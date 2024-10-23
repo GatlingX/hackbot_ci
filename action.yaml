@@ -1,21 +1,38 @@
 name: 'Hackbot CI'
-description: 'Hackbot action'
+description: 'Hackbot workflow action'
 
 inputs:
-  bot_address:
-    description: 'The address of the bot to hack'
+  address:
+    description: 'The address of the hackbot service'
     required: false
     default: 'localhost'
-  bot_port:
-    description: 'The port of the bot to hack'
+  port:
+    description: 'The port of the hackbot service'
     required: false
     default: '5000'
   api_key:
-    description: 'The API key to use to authenticate with the bot'
+    description: 'The API key to use to authenticate with the hackbot service'
     required: true
+  output:
+    description: 'The output file to write the results to. It can contain folder paths.'
+    required: false
+  artifact:
+    type: boolean
+    description: 'Whether to upload the logs as an artifact'
+    required: false
+    default: 'false'
+  generate_issues:
+    type: boolean
+    description: 'Whether to generate issues with the results'
+    required: false
+    default: 'false'
+  issues_repo:
+    description: 'The repository to generate issues in. It should be in the format of "username/repo"'
+    required: false
+
 outputs:
-  hack_results:
-    description: "The results of the hack"
+  results:
+    description: 'The results of the hack'
     value: ${{ steps.hack_contract.outputs.results }}
 
 runs:
@@ -30,16 +47,35 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        python -m pip install aiohttp requests
+        python -m pip install aiohttp requests jq pygithub
 
     - name: Hack the contract
       id: hack_contract
       shell: bash
+      continue-on-error: true
       run: |       
         ${{ github.action_path }}/src/compress.sh
         python ${{ github.action_path }}/src/bot_api.py \
-          --bot_address ${{ inputs.bot_address }} \
-          --bot_port ${{ inputs.bot_port }} \
-          --api_key ${{ inputs.api_key }}
-        echo "$results"
+          --address ${{ inputs.address }} \
+          --port ${{ inputs.port }} \
+          --api_key ${{ inputs.api_key }} \
+          --output ${{ inputs.output }} \
+          --generate_issues ${{ inputs.generate_issues }} \
+          --issues_repo ${{ inputs.issues_repo }} \
+          --github_api_key ${{ github.token }}
+
+    - name: Move logs
+      shell: bash
+      if: inputs.artifact == 'true'
+      run: |
+        mkdir hb_logs
+        mv ${{ inputs.output }} hb_logs/${{ inputs.output }}
+
+    - name: Upload logs
+      if: inputs.artifact == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: hack-logs
+        path: hb_logs
+        retention-days: 90
 
