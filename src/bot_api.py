@@ -5,6 +5,10 @@ import json
 import argparse
 import requests
 import jq
+import zipfile
+from github import Github
+from github import GithubException
+from github import Auth
 
 
 def generate_github_issues(issues, github_api_key, issues_repo):
@@ -30,10 +34,6 @@ def generate_github_issues(issues, github_api_key, issues_repo):
         - This function requires a GitHub token with 'issues: write' and 'contents: read' permissions.
         - It creates a master issue with a title format of "HB-{number}".
     """
-    from github import Github
-    from github import GithubException
-    from github import Auth
-
     auth = Auth.Token(github_api_key)
     g = Github(auth=auth)
 
@@ -100,6 +100,28 @@ def authenticate(address, port, api_key):
         raise Exception(f"Failed: {response.status_code}")
 
 
+def compress_source_code(source_path: str = "."):
+    try:
+        with zipfile.ZipFile("src.zip", "w", zipfile.ZIP_DEFLATED) as zipf:
+            for root, dirs, files in os.walk(source_path):
+                # Skip hidden directories
+                dirs[:] = [d for d in dirs if not d.startswith(".")]
+                for file in files:
+                    # Skip hidden files and .zip files
+                    if not file.startswith(".") and not file.endswith(".zip"):
+                        file_path = os.path.join(root, file)
+                        arcname = os.path.relpath(file_path, source_path)
+                        zipf.write(file_path, arcname)
+
+        if os.path.exists("src.zip"):
+            print("Compressed successfully")
+        else:
+            raise Exception("Compression failed")
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        raise
+
+
 def hack(address: str, port: int, api_key: str, output: str):
     """
     Call the hackbot service on the received source code.
@@ -136,6 +158,9 @@ def hack(address: str, port: int, api_key: str, output: str):
             return response.status, await process_stream(response)
 
     async def main():
+        # Compress the source code
+        compress_source_code(".")
+
         # Create the API call for the hackbot service
         url = f"http://{address}:{port}/api/hack"
         headers = {"X-API-KEY": f"{api_key}", "Connection": "keep-alive"}
@@ -273,7 +298,7 @@ if __name__ == "__main__":
             address=args.address,
             port=args.port,
             api_key=args.api_key,
-            output=args.output
+            output=args.output,
         )
 
         if github_output:
