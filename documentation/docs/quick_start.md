@@ -1,75 +1,56 @@
 ---
 sidebar_position: 1
 ---
-
 # Quick Start
 
-## Step 1
-
-Install the Gatling Gun CLI
-
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
-<Tabs>
-  <TabItem value="pip" label="pip">
-
-```bash
-pip install hackbot
-```
-
-  </TabItem>
-  <TabItem value="pip3" label="pip3">
-
-```bash
-pip3 install ggun
-```
-
-  </TabItem>
-</Tabs>
-
-## Step 2
 
 :::warning
-You can ignore this step for now. This is for post-production
+Hackbot CI is currently in beta. If you encounter any issues, please report them to us on [GitHub issues](https://github.com/GatlingX/hackbot_ci/issues).
 :::
 
-Get a Gatling Gun API key from the [Gatling Gun website](https://ggun.com).
+## Step 1: Get an API key
 
-## Step 3
+:::warning
+Currently, you need to contact us to get an API key. Contact eito@gatlingx.com to get one.
+:::
 
-Set the `API_URL` environment variable to `http://34.89.77.42:8081` (Temporary)
+## Step 2: Install the Hackbot CLI
 
-```bash
-export API_URL=http://34.89.77.42:8081
+In your github repository, add the following to your `.github/workflows/hackbot.yml` file. Make sure to:
+- replace the `<service address>` and `<service port>` with the address and port of the service you want to scan.
+- replace the `username/repo` with the repository you want to create issues in.
+- replace the `{{ secrets.YOUR_API_KEY }}` with your API key.
+```yaml title=".github/workflows/hackbot.yml"
+name: Hackbot Scan Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  hackbot-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Hackbot Scan
+        uses: GatlingX/hackbot-ci@v0.1.13
+        with:
+          address: <service address>
+          port: <service port>
+          api_key: ${{ secrets.YOUR_API_KEY }}
+          output: "results.json"
+          artifact: true
+          generate_issues: true
+          issues_repo: "username/repo"
+        id: test-action
+
+      - name: Print output
+        run: |
+          echo "Hack result: ${{ steps.test-action.outputs.results }}"  
 ```
 
-## Step 4
 
-Run the Gatling Gun CLI on a foundry project. `ggun` expects a foundry project to be in the current directory, like below:
-
-```text
-example_foundry_project/
-├── foundry.toml
-├── lib/
-│   └── forge-std
-├── README.md
-├── script/
-│   └── Counter.s.sol
-├── src/
-│   └── Counter.sol
-└── test/
-    └── Counter.t.sol
-```
-
-```bash
-$ ggun test
-No files changed, compilation skipped
-
-Ran 2 tests for test/Counter.t.sol:CounterTest
-[PASS] testFuzz_SetNumber(uint256) (runs: 256, μ: 30474, ~: 31252)
-[PASS] test_Increment() (gas: 31225)
-Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 15.15ms (14.74ms CPU time)
-
-Ran 1 test suite in 15.65ms (15.15ms CPU time): 2 tests passed, 0 failed, 0 skipped (2 total tests)
-```
