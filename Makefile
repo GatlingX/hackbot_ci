@@ -11,3 +11,14 @@ doc:
 	cd documentation && npm start && cd ..
 
 
+
+
+deploy:
+	cd documentation && npm run build && cd ..
+
+# Deployment guide: https://docusaurus.io/docs/deployment
+
+
+
+
+
