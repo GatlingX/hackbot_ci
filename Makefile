@@ -8,5 +8,6 @@ doc-dev: doc-install
 
 
 doc:
-	
+	cd documentation && npm start && cd ..
+
 
