@@ -1,4 +1,7 @@
 
+VERSION=0.1.0
+
+
 
 doc-install:
 	cd docs && npm install && cd ..
@@ -19,6 +22,10 @@ deploy:
 # Deployment guide: https://docusaurus.io/docs/deployment
 
 
+build:
+	cd documentation && npm run build && cd ..
+	cd documentation && zip -r build.zip build/ && cd ..
+	open documentation
 
 
 
