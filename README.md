@@ -4,8 +4,6 @@ This action is used to launch the Hackbot service and scan a contract for vurnab
 
 ## Inputs
 
-- `address`: The address of the service (required).
-- `port`: The port of the service (required).
 - `api_key`: The token to use to authenticate with the service (required).
 - `output`: The output file to save the results to. Saved results are uploaded as an artifact if `artifact` is true. It can contain folder paths. (optional).
 - `artifact`: Whether to upload the results as an artifact. (optional).
@@ -37,15 +35,13 @@ These permissions are required to read the repository and create issues in the r
 ```yaml
 uses: GatlingX/hackbot-ci@v0.1.13
 with:
-  address: <service address>
-  port: <service port>
   api_key: ${{ secrets.YOUR_KEY }}
   output: "results.json"
   artifact: true
   generate_issues: true
   issues_repo: "username/repo"
 ```
-Options `address`, `port` and `api_key` are required and can be found in the Hackbot service settings.
+Option `api_key` is required and can be found in the Hackbot service settings.
 Options `output` and `artifact` are optional. The `output` option instructs the action where to save the results. The `artifact` option instructs the action to upload the results as an artifact.
 Option `generate_issues` is optional. When enabled, the action will create issues in the specified repository.
 Option `issues_repo` is optional. It is used to specify the repository to create issues in and is required when `generate_issues` is `true`.
@@ -78,8 +74,6 @@ jobs:
       - name: Run Hackbot Scan
         uses: GatlingX/hackbot-ci@v0.1.13
         with:
-          address: <service address>
-          port: <service port>
           api_key: ${{ secrets.YOUR_KEY }}
           output: "results.json"
           artifact: true

@@ -6,14 +6,6 @@ branding:
   color: "red"
 
 inputs:
-  address:
-    description: 'The address of the hackbot service'
-    required: false
-    default: 'localhost'
-  port:
-    description: 'The port of the hackbot service'
-    required: false
-    default: '5000'
   api_key:
     description: 'The API key to use to authenticate with the hackbot service'
     required: true
@@ -60,8 +52,6 @@ runs:
       run: |       
         ${{ github.action_path }}/src/compress.sh
         python ${{ github.action_path }}/src/bot_api.py \
-          --address ${{ inputs.address }} \
-          --port ${{ inputs.port }} \
           --api_key ${{ inputs.api_key }} \
           --output ${{ inputs.output }} \
           --generate_issues ${{ inputs.generate_issues }} \

@@ -206,10 +206,18 @@ def handle_options():
         description="Hackbot API client for interacting with the bot server."
     )
     parser.add_argument(
-        "--address", type=str, required=True, help="The address of the bot server."
+        "--address",
+        type=str,
+        required=False,
+        help="The address of the bot server.",
+        default="app.hackbot.app",
     )
     parser.add_argument(
-        "--port", type=str, required=True, help="The port number of the bot server."
+        "--port",
+        type=str,
+        required=False,
+        help="The port number of the bot server.",
+        default="5000",
     )
     parser.add_argument(
         "--api_key",
