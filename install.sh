@@ -26,23 +26,30 @@ function warning() {
 # Starting installation
 ##########################################################
 
-# Step 1: Check if we're in a git repository for hackbot target
+# Step 1: Check if API key is provided
+if [ -z "$1" ]; then
+    error_exit "Please provide your Hackbot API key as an argument. Usage: ./install.sh <HACKBOT_API_KEY>"
+fi
+
+HACKBOT_API_KEY="$1"
+
+# Step 2: Check if we're in a git repository for hackbot target
 if [ ! -d .git ]; then
     error_exit "This script must be run from the root of a git repository that you want the hackbot to scan."
 fi
 
-# Step 2: Check if git is installed
+# Step 3: Check if git is installed
 if ! command -v git &> /dev/null; then
     error_exit "git is not installed. Please install git first"
 fi
 
-# Step 3: Extract repository information from git remote URL
+# Step 4: Extract repository information from git remote URL
 REMOTE_URL=$(git remote get-url origin)
 if [ $? -ne 0 ]; then
     error_exit "Failed to get git remote URL. Make sure you run this script in the root of your git repository you want the hackbot to scan your code."
 fi
 
-# Step 4: Parse GitHub repository information
+# Step 5: Parse GitHub repository information
 if [[ $REMOTE_URL =~ github\.com[:/]([^/]+)/([^/]+)(\.git)?$ ]]; then
     GITHUB_ORG="${BASH_REMATCH[1]}"
     GITHUB_REPO="${BASH_REMATCH[2]%.git}"
@@ -50,7 +57,7 @@ else
     error_exit "Could not parse GitHub organization and repository from remote URL: $REMOTE_URL"
 fi
 
-# Step 5: Check if gh CLI is installed
+# Step 6: Check if gh CLI is installed
 if ! command -v gh &> /dev/null; then
     warning "GitHub CLI (gh) is not installed. Installing now..."
     
@@ -102,12 +109,12 @@ if ! command -v gh &> /dev/null; then
     fi
 fi
 
-# Step 6: Verify gh CLI installation
+# Step 7: Verify gh CLI installation
 if ! command -v gh &> /dev/null; then
     error_exit "Failed to install GitHub CLI"
 fi
 
-# Step 7: Check if logged in to GitHub CLI
+# Step 8: Check if logged in to GitHub CLI
 if ! gh auth status &> /dev/null; then
     warning "Not logged in to GitHub CLI. Please login:"
     gh auth login
@@ -116,17 +123,17 @@ if ! gh auth status &> /dev/null; then
     fi
 fi
 
-# Step 8: Set HACKBOT_API_KEY as a GitHub secret
+# Step 9: Set HACKBOT_API_KEY as a GitHub secret
 echo "Setting up HACKBOT_API_KEY as a GitHub secret..."
-if ! gh secret set HACKBOT_API_KEY -b"sk-942403b1-eea6-4f7c-8c5a-902114a6f22d" -R "$GITHUB_ORG/$GITHUB_REPO"; then
+if ! gh secret set HACKBOT_API_KEY -b"$HACKBOT_API_KEY" -R "$GITHUB_ORG/$GITHUB_REPO"; then
     error_exit "Failed to set HACKBOT_API_KEY secret in GitHub repository"
 fi
 
-# Step 9: Create GitHub Actions workflow directory if it doesn't exist
+# Step 10: Create GitHub Actions workflow directory if it doesn't exist
 WORKFLOW_DIR=".github/workflows"
 mkdir -p "$WORKFLOW_DIR"
 
-# Step 10: Check if workflow file already exists
+# Step 11: Check if workflow file already exists
 WORKFLOW_FILE="$WORKFLOW_DIR/hackbot-scan.yaml"
 if [ -f "$WORKFLOW_FILE" ]; then
     read -p "⚠️  Workflow file already exists. Do you want to overwrite it? (y/N) " -n 1 -r
@@ -150,7 +157,7 @@ else
     success "Created GitHub Actions workflow file at $WORKFLOW_FILE"
 fi
 
-# Step 11: Stage the workflow file and inform about pushing
+# Step 12: Stage the workflow file and inform about pushing
 git add "$WORKFLOW_FILE"
 if [ $? -ne 0 ]; then
     error_exit "Failed to stage workflow file"
