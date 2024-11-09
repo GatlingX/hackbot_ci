@@ -35,7 +35,7 @@ These permissions are required to read the repository and create issues in the r
 ```yaml
 uses: GatlingX/hackbot-ci@v0.1.13
 with:
-  api_key: ${{ secrets.YOUR_KEY }}
+  api_key: ${{ secrets.HACKBOT_API_KEY }}
   output: "results.json"
   artifact: true
   generate_issues: true
@@ -74,7 +74,7 @@ jobs:
       - name: Run Hackbot Scan
         uses: GatlingX/hackbot-ci@v0.1.13
         with:
-          api_key: ${{ secrets.YOUR_KEY }}
+          api_key: ${{ secrets.HACKBOT_API_KEY }}
           output: "results.json"
           artifact: true
           generate_issues: true
