@@ -162,14 +162,25 @@ else
     success "Created GitHub Actions workflow file at $WORKFLOW_FILE"
 fi
 
-# Step 13: Stage the workflow file and inform about pushing
-git add "$WORKFLOW_FILE"
-if [ $? -ne 0 ]; then
-    error_exit "Failed to stage workflow file"
+# Step 13: Ask user if they want to commit and push automatically
+read -p "Would you like to commit and push the changes now? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    git commit -m "Add Hackbot workflow"
+    if [ $? -ne 0 ]; then
+        error_exit "Failed to commit workflow file"
+    fi
+    
+    git push origin main
+    if [ $? -ne 0 ]; then
+        error_exit "Failed to push changes to main branch"
+    fi
+    success "Changes committed and pushed successfully"
+else
+    success "Staged workflow file for commit"
+    warning "Don't forget to commit and push the changes manually. Run the following commands:"
+    echo -e "  git commit -m \"Add Hackbot workflow\""
+    echo -e "  git push origin main"
 fi
-success "Staged workflow file for commit"
-warning "Don't forget to commit and push the changes. Run the following commands:"
-echo -e "  git commit -m \"Add Hackbot workflow\""
-echo -e "  git push origin main"
 
 success "Installed hackbot for repository: https://github.com/$GITHUB_ORG/$GITHUB_REPO"
