@@ -25,6 +25,9 @@ inputs:
   issues_repo:
     description: 'The repository to generate issues in. It should be in the format of "username/repo"'
     required: false
+  github_token:
+    description: "The GitHub token to use to authenticate with GitHub"
+    required: false
 
 outputs:
   results:
@@ -49,12 +52,18 @@ runs:
       shell: bash
       continue-on-error: false
       run: |
-        python ${{ github.action_path }}/src/bot_api.py \
+        echo "Running command: python ${{ github.action_path }}/src/bot_api.py \
           --api_key "${{ inputs.api_key }}" \
-          ${{ inputs.output != '' && format('--output "{0}"', inputs.output) }} \
+          --output ${{ inputs.output }} \
           --generate_issues ${{ inputs.generate_issues }} \
           --issues_repo ${{ inputs.issues_repo }} \
-          --github_api_key ${{ secrets.GITHUB_TOKEN }}
+          --github_api_key TOKEN_HERE"
+        python ${{ github.action_path }}/src/bot_api.py \
+          --api_key "${{ inputs.api_key }}" \
+          --output ${{ inputs.output }} \
+          --generate_issues ${{ inputs.generate_issues }} \
+          --issues_repo ${{ inputs.issues_repo }} \
+          --github_api_key ${{ inputs.github_token }}
 
     - name: Move logs
       shell: bash
