@@ -63,15 +63,15 @@ runs:
         echo "Running command: python ${{ github.action_path }}/src/bot_api.py \
           --address ${{ inputs.address }} \
           --port ${{ inputs.port }} \
-          --api_key "${{ inputs.api_key }}" \
+          --api_key '${{ inputs.api_key }}' \
           --output ${{ inputs.output }} \
           --generate_issues ${{ inputs.generate_issues }} \
-          --issues_repo ${{ inputs.issues_repo }}
+          --issues_repo ${{ inputs.issues_repo }} "
         if [ ${{ inputs.generate_issues }} == "true" ]; then
           python ${{ github.action_path }}/src/bot_api.py \
             --address ${{ inputs.address }} \
             --port ${{ inputs.port }} \
-            --api_key "${{ inputs.api_key }}" \
+            --api_key '${{ inputs.api_key }}' \
             --output ${{ inputs.output }} \
             --generate_issues ${{ inputs.generate_issues }} \
             --issues_repo ${{ inputs.issues_repo }} \
@@ -80,7 +80,7 @@ runs:
           python ${{ github.action_path }}/src/bot_api.py \
             --address ${{ inputs.address }} \
             --port ${{ inputs.port }} \
-            --api_key "${{ inputs.api_key }}" \
+            --api_key '${{ inputs.api_key }}' \
             --output ${{ inputs.output }} \
             --generate_issues ${{ inputs.generate_issues }} \
             --issues_repo ${{ inputs.issues_repo }}
