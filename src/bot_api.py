@@ -72,13 +72,9 @@ def generate_github_issues(issues, github_api_key, issues_repo):
     except GithubException as e:
         print(f"Error creating issue: {e}")
         if e.status == 422:
-            raise Exception(
-                "Validation failed, aborting. This functionality requires a GITHUB_TOKEN with 'issues: write' in the workflow permissions section."
-            )
+            raise Exception("Validation failed, aborting. This functionality requires a GITHUB_TOKEN with 'issues: write' in the workflow permissions section.")
         elif e.status == 403:
-            raise Exception(
-                "Forbidden, aborting. This functionality requires a GITHUB_TOKEN with 'issues: write' in the workflow permissions section."
-            )
+            raise Exception("Forbidden, aborting. This functionality requires a GITHUB_TOKEN with 'issues: write' in the workflow permissions section.")
         elif e.status == 410:
             raise Exception("Gone, aborting. The repository does not allow issues.")
 
@@ -202,22 +198,20 @@ def hack(address: str, port: int, api_key: str, output: str):
 
 
 def handle_options():
-    parser = argparse.ArgumentParser(
-        description="Hackbot API client for interacting with the bot server."
-    )
+    parser = argparse.ArgumentParser(description="Hackbot API client for interacting with the bot server.")
     parser.add_argument(
         "--address",
         type=str,
         required=False,
         help="The address of the bot server.",
-        default="app.hackbot.app",
+        default="app.hackbot.org",
     )
     parser.add_argument(
         "--port",
         type=str,
         required=False,
         help="The port number of the bot server.",
-        default="5000",
+        default="80",
     )
     parser.add_argument(
         "--api_key",
@@ -289,44 +283,31 @@ if __name__ == "__main__":
     print()
 
     # Try the credentials before doing anything else
-    try:
-        authenticate(args.address, args.port, args.api_key)
-        print("Authentication successful")
-    except Exception as e:
-        print(e)
-        exit(1)
+    authenticate(args.address, args.port, args.api_key)
+    print("Authentication to hackbot api successful")
 
     # If we only want to authenticate, we can exit here
     if args.authenticate:
         exit(0)
 
     # Hack the contract
-    try:
-        results = hack(
-            address=args.address,
-            port=args.port,
-            api_key=args.api_key,
-            output=args.output,
-        )
+    results = hack(
+        address=args.address,
+        port=args.port,
+        api_key=args.api_key,
+        output=args.output,
+    )
 
-        if github_output:
-            with open(github_output, "a") as f:
-                compact_json = jq.compile(".").input(json.dumps(results)).text()
-                f.write(f"results={compact_json}\n")
+    if github_output:
+        with open(github_output, "a") as f:
+            compact_json = jq.compile(".").input(json.dumps(results)).text()
+            f.write(f"results={compact_json}\n")
 
-        # Print the contents of github_output
-        if github_output:
-            print("Contents of GITHUB_OUTPUT:")
-            with open(github_output, "r") as f:
-                print(f.read())
-
-    except Exception as e:
-        print(e)
-        exit(1)
+    # Print the contents of github_output
+    if github_output:
+        print("Contents of GITHUB_OUTPUT:")
+        with open(github_output, "r") as f:
+            print(f.read())
 
     if args.generate_issues:
-        try:
-            generate_github_issues(results, args.github_api_key, args.issues_repo)
-        except Exception as e:
-            print(e)
-            exit(1)
+        generate_github_issues(results, args.github_api_key, args.issues_repo)
