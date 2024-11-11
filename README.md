@@ -50,7 +50,7 @@ Optional:
 - `artifact`: Whether to upload the results as an artifact.
 - `generate_issues`: Whether to generate issues with the results. Requires the `GITHUB_TOKEN` input to have `issues: write` permissions.
 - `issues_repo`: The github repository to generate issues in (username/repo). (required when `generate_issues` is true).
-- `GITHUB_TOKEN`: The github token to use to authenticate with the github API when generating issues. Both legacy and fine-grained tokens are supported.
+- `github_token`: The github token to use to authenticate with the github API when generating issues. Both legacy and fine-grained tokens are supported.
 
 ## Outputs
 Outputs can be accessed in subsequent steps using `${{ steps.test-action.outputs.OUTPUTNAME }}`.
