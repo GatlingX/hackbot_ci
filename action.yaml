@@ -51,7 +51,7 @@ runs:
       run: |
         python ${{ github.action_path }}/src/bot_api.py \
           --api_key "${{ inputs.api_key }}" \
-          ${{ inputs.output != '' && format('--output "{0}"', inputs.output) }} \
+          --output ${{ inputs.output }} \
           --generate_issues ${{ inputs.generate_issues }} \
           --issues_repo ${{ inputs.issues_repo }} \
           --github_api_key ${{ secrets.GITHUB_TOKEN }}
