@@ -150,7 +150,12 @@ def hack(address: str, port: int, api_key: str, output: str):
         return results
 
     async def make_request(session, url, data, headers):
-        async with session.post(url, data=data, headers=headers) as response:
+        async with session.post(
+            url,
+            data=data,
+            headers=headers,
+            timeout=aiohttp.ClientTimeout(total=1200, connect=10, sock_read=900, sock_connect=10),
+        ) as response:
             return response.status, await process_stream(response)
 
     async def main():
