@@ -1,5 +1,5 @@
-name: 'Hackbot CI'
-description: 'Hackbot workflow action'
+name: "Hackbot CI"
+description: "Hackbot workflow action"
 author: "GatlingX"
 branding:
   icon: "check-circle"
@@ -7,38 +7,37 @@ branding:
 
 inputs:
   api_key:
-    description: 'The API key to use to authenticate with the hackbot service'
+    description: "The API key to use to authenticate with the hackbot service"
     required: true
   output:
-    description: 'The output file to write the results to. It can contain folder paths.'
+    description: "The output file to write the results to. It can contain folder paths."
     required: false
   artifact:
     type: boolean
-    description: 'Whether to upload the logs as an artifact'
+    description: "Whether to upload the logs as an artifact"
     required: false
-    default: 'false'
+    default: "false"
   generate_issues:
     type: boolean
-    description: 'Whether to generate issues with the results'
+    description: "Whether to generate issues with the results"
     required: false
-    default: 'false'
+    default: "false"
   issues_repo:
     description: 'The repository to generate issues in. It should be in the format of "username/repo"'
     required: false
 
 outputs:
   results:
-    description: 'The results of the hack'
+    description: "The results of the hack"
     value: ${{ steps.hack_contract.outputs.results }}
 
 runs:
   using: "composite"
   steps:
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
-        cache: 'pip' 
-        python-version: '3.12'
+        python-version: "3.12"
 
     - name: Install dependencies
       shell: bash
@@ -49,7 +48,7 @@ runs:
       id: hack_contract
       shell: bash
       continue-on-error: true
-      run: |       
+      run: |
         ${{ github.action_path }}/src/compress.sh
         python ${{ github.action_path }}/src/bot_api.py \
           --api_key ${{ inputs.api_key }} \
@@ -72,4 +71,3 @@ runs:
         name: hack-logs
         path: hb_logs
         retention-days: 90
-

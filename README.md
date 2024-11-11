@@ -1,16 +1,61 @@
 # Hackbot CI
 
-This action is used to launch the Hackbot service and scan a contract for vurnabilities.
+This action is used to launch the Hackbot service and scan a contract for vulnerabilities.
+
+## Usage example
+
+In 
+`.github/workflows/hackbot-scan.yml` :
+```yaml
+name: Hackbot Scan Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  hackbot-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Hackbot Scan
+        uses: GatlingX/hackbot_ci@main
+        with:
+          api_key: ${{ secrets.HACKBOT_API_KEY }}
+          output: "results.json"
+          artifact: true
+          generate_issues: false
+          issues_repo: "YOUR_GITHUB_USERNAME/YOUR_ISSUES_REPO"
+        id: test-action
+
+      - name: Print output
+        run: |
+          echo "Hack result: ${{ steps.test-action.outputs.results }}"  
+```
 
 ## Inputs
+The action accepts the following inputs:
 
-- `api_key`: The token to use to authenticate with the service (required).
-- `output`: The output file to save the results to. Saved results are uploaded as an artifact if `artifact` is true. It can contain folder paths. (optional).
-- `artifact`: Whether to upload the results as an artifact. (optional).
-- `generate_issues`: Whether to generate issues with the results. It requires a `GITHUB_TOKEN` with `issues: write` permissions. (optional).
-- `issues_repo`: The repository to generate issues in (username/repo). (required when `generate_issues` is true).
+Required:
+
+- `api_key`: Authentication token to use to authenticate with the hackbot service.
+
+Optional:
+
+- `output`: The output filename to save the results to. Saved results are uploaded as an artifact if `artifact` is true. The result data is json encoded.
+- `artifact`: Whether to upload the results as an artifact.
+- `generate_issues`: Whether to generate issues with the results. Requires the `GITHUB_TOKEN` input to have `issues: write` permissions.
+- `issues_repo`: The github repository to generate issues in (username/repo). (required when `generate_issues` is true).
+- `GITHUB_TOKEN`: The github token to use to authenticate with the github API when generating issues. Both legacy and fine-grained tokens are supported.
 
 ## Outputs
+Outputs can be accessed in subsequent steps using `${{ steps.test-action.outputs.OUTPUTNAME }}`.
+
+Outputs:
 
 - `results`: The results of the hack in JSON format.
 
@@ -33,7 +78,7 @@ These permissions are required to read the repository and create issues in the r
 
 ### Step section
 ```yaml
-uses: GatlingX/hackbot-ci@v0.1.13
+uses: GatlingX/hackbot_ci@main
 with:
   api_key: ${{ secrets.HACKBOT_API_KEY }}
   output: "results.json"
@@ -52,36 +97,3 @@ In concequent steps, the results can be accessed using the `results` output or t
 ${{ steps.test-action.outputs.results }}"
 ```
 
-
-## Example
-
-```yaml
-name: Hackbot Scan Workflow
-
-on:
-  workflow_dispatch:
-
-jobs:
-  hackbot-scan:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      issues: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run Hackbot Scan
-        uses: GatlingX/hackbot-ci@v0.1.13
-        with:
-          api_key: ${{ secrets.HACKBOT_API_KEY }}
-          output: "results.json"
-          artifact: true
-          generate_issues: true
-          issues_repo: "username/repo"
-        id: test-action
-
-      - name: Print output
-        run: |
-          echo "Hack result: ${{ steps.test-action.outputs.results }}"  
-```
