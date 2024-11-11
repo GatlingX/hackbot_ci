@@ -32,7 +32,7 @@ outputs:
     value: ${{ steps.hack_contract.outputs.results }}
 
 runs:
-  using: "composite"
+  uses: "composite"
   steps:
     - name: Set up Python
       uses: actions/setup-python@v4
