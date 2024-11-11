@@ -57,7 +57,7 @@ runs:
           --output ${{ inputs.output }} \
           --generate_issues ${{ inputs.generate_issues }} \
           --issues_repo ${{ inputs.issues_repo }} \
-          --github_api_key ${{ inputs.github_token }}"
+          --github_api_key TOKEN_HERE"
         python ${{ github.action_path }}/src/bot_api.py \
           --api_key "${{ inputs.api_key }}" \
           --output ${{ inputs.output }} \
