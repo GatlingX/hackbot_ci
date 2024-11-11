@@ -91,8 +91,8 @@ Options `output` and `artifact` are optional. The `output` option instructs the 
 Option `generate_issues` is optional. When enabled, the action will create issues in the specified repository.
 Option `issues_repo` is optional. It is used to specify the repository to create issues in and is required when `generate_issues` is `true`.
 
-### Consequent steps
-In concequent steps, the results can be accessed using the `results` output or the `output` file.
+### Subsequent steps
+In subsequent steps, the results can be accessed using the `results` output or the `output` file.
 ```yaml
 ${{ steps.test-action.outputs.results }}"
 ```

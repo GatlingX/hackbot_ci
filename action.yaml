@@ -28,6 +28,14 @@ inputs:
   github_token:
     description: "The GitHub token to use to authenticate with GitHub"
     required: false
+  address:
+    description: "The address of the hackbot server"
+    required: false
+    default: "app.hackbot.org"
+  port:
+    description: "The port of the hackbot server"
+    required: false
+    default: "80"
 
 outputs:
   results:
@@ -53,12 +61,16 @@ runs:
       continue-on-error: false
       run: |
         echo "Running command: python ${{ github.action_path }}/src/bot_api.py \
+          --address ${{ inputs.address }} \
+          --port ${{ inputs.port }} \
           --api_key "${{ inputs.api_key }}" \
           --output ${{ inputs.output }} \
           --generate_issues ${{ inputs.generate_issues }} \
           --issues_repo ${{ inputs.issues_repo }} \
-          --github_api_key TOKEN_HERE"
+          --github_api_key <TOKEN_ELIDED>"
         python ${{ github.action_path }}/src/bot_api.py \
+          --address ${{ inputs.address }} \
+          --port ${{ inputs.port }} \
           --api_key "${{ inputs.api_key }}" \
           --output ${{ inputs.output }} \
           --generate_issues ${{ inputs.generate_issues }} \
