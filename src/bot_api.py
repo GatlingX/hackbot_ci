@@ -176,7 +176,7 @@ def hack(address: str, port: int, api_key: str, output: str):
         data.add_field("repo_url", "https://github.com/not_impemented")
 
         # Make the request to the hackbot service
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=1200, connect=10, sock_read=900, sock_connect=10)) as session:
             status, response = await make_request(session, url, data, headers)
 
         # Save the results to a file if the output path is specified
