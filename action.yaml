@@ -57,7 +57,7 @@ runs:
           --output ${{ inputs.output }} \
           --generate_issues ${{ inputs.generate_issues }} \
           --issues_repo ${{ inputs.issues_repo }} \
-          --github_token ${{ inputs.github_token }}
+          --github_api_key ${{ inputs.github_token }}
 
     - name: Move logs
       shell: bash
