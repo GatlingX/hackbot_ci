@@ -248,6 +248,7 @@ def handle_options():
     issue_parser.add_argument(
         "--github_api_key",
         type=str,
+        required=False,
         help="GitHub API key for issue generation",
     )
     args = parser.parse_args()

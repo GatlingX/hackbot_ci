@@ -26,7 +26,7 @@ inputs:
     description: 'The repository to generate issues in. It should be in the format of "username/repo"'
     required: false
   github_token:
-    description: "The GitHub token to use to authenticate with GitHub"
+    description: "The GitHub token to use to authenticate with GitHub, only needed if generate_issues is true"
     required: false
   address:
     description: "The address of the hackbot server"
@@ -66,8 +66,7 @@ runs:
           --api_key "${{ inputs.api_key }}" \
           --output ${{ inputs.output }} \
           --generate_issues ${{ inputs.generate_issues }} \
-          --issues_repo ${{ inputs.issues_repo }} \
-          --github_api_key <TOKEN_ELIDED>"
+          --issues_repo ${{ inputs.issues_repo }}
         python ${{ github.action_path }}/src/bot_api.py \
           --address ${{ inputs.address }} \
           --port ${{ inputs.port }} \
@@ -75,7 +74,7 @@ runs:
           --output ${{ inputs.output }} \
           --generate_issues ${{ inputs.generate_issues }} \
           --issues_repo ${{ inputs.issues_repo }} \
-          --github_api_key ${{ inputs.github_token }}
+          --github_api_key ${{ inputs.github_token if inputs.generate_issues else 'not_a_token' }}
 
     - name: Move logs
       shell: bash
