@@ -50,7 +50,7 @@ runs:
     - name: Hack the contract
       id: hack_contract
       shell: bash
-      continue-on-error: false
+      continue-on-error: true
       run: |
         echo "Running command: python ${{ github.action_path }}/src/bot_api.py \
           --api_key "${{ inputs.api_key }}" \

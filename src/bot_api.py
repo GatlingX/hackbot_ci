@@ -9,6 +9,7 @@ import zipfile
 from github import Github
 from github import GithubException
 from github import Auth
+from aiohttp import ClientPayloadError
 
 
 def generate_github_issues(issues, github_api_key, issues_repo):
@@ -72,9 +73,13 @@ def generate_github_issues(issues, github_api_key, issues_repo):
     except GithubException as e:
         print(f"Error creating issue: {e}")
         if e.status == 422:
-            raise Exception("Validation failed, aborting. This functionality requires a GITHUB_TOKEN with 'issues: write' in the workflow permissions section.")
+            raise Exception(
+                "Validation failed, aborting. This functionality requires a GITHUB_TOKEN with 'issues: write' in the workflow permissions section."
+            )
         elif e.status == 403:
-            raise Exception("Forbidden, aborting. This functionality requires a GITHUB_TOKEN with 'issues: write' in the workflow permissions section.")
+            raise Exception(
+                "Forbidden, aborting. This functionality requires a GITHUB_TOKEN with 'issues: write' in the workflow permissions section."
+            )
         elif e.status == 410:
             raise Exception("Gone, aborting. The repository does not allow issues.")
 
@@ -100,11 +105,9 @@ def compress_source_code(source_path: str = "."):
     try:
         with zipfile.ZipFile("src.zip", "w", zipfile.ZIP_DEFLATED) as zipf:
             for root, dirs, files in os.walk(source_path):
-                # Skip hidden directories
-                dirs[:] = [d for d in dirs if not d.startswith(".")]
                 for file in files:
-                    # Skip hidden files and .zip files
-                    if not file.startswith(".") and not file.endswith(".zip"):
+                    # Skip .zip files
+                    if not file.endswith(".zip"):
                         file_path = os.path.join(root, file)
                         arcname = os.path.relpath(file_path, source_path)
                         zipf.write(file_path, arcname)
@@ -190,7 +193,13 @@ def hack(address: str, port: int, api_key: str, output: str):
 
         return status, response
 
-    status, response = asyncio.run(main())
+    try:
+        status, response = asyncio.run(main())
+    except ClientPayloadError as e:
+        raise Exception(
+            "Client received an incomplete response. This can be due to the server response timing out or incorrect source input. Try again and if the problem persists contact support."
+        )
+
     if status != 200:
         raise Exception(f"Failed: {status}: {response}")
 
@@ -283,31 +292,44 @@ if __name__ == "__main__":
     print()
 
     # Try the credentials before doing anything else
-    authenticate(args.address, args.port, args.api_key)
-    print("Authentication to hackbot api successful")
+    try:
+        authenticate(args.address, args.port, args.api_key)
+        print("Authentication successful")
+    except Exception as e:
+        print(e)
+        exit(1)
 
     # If we only want to authenticate, we can exit here
     if args.authenticate:
         exit(0)
 
     # Hack the contract
-    results = hack(
-        address=args.address,
-        port=args.port,
-        api_key=args.api_key,
-        output=args.output,
-    )
+    try:
+        results = hack(
+            address=args.address,
+            port=args.port,
+            api_key=args.api_key,
+            output=args.output,
+        )
 
-    if github_output:
-        with open(github_output, "a") as f:
-            compact_json = jq.compile(".").input(json.dumps(results)).text()
-            f.write(f"results={compact_json}\n")
+        if github_output:
+            with open(github_output, "a") as f:
+                compact_json = jq.compile(".").input(json.dumps(results)).text()
+                f.write(f"results={compact_json}\n")
 
-    # Print the contents of github_output
-    if github_output:
-        print("Contents of GITHUB_OUTPUT:")
-        with open(github_output, "r") as f:
-            print(f.read())
+        # Print the contents of github_output
+        if github_output:
+            print("Contents of GITHUB_OUTPUT:")
+            with open(github_output, "r") as f:
+                print(f.read())
+
+    except Exception as e:
+        print(e)
+        exit(1)
 
     if args.generate_issues:
-        generate_github_issues(results, args.github_api_key, args.issues_repo)
+        try:
+            generate_github_issues(results, args.github_api_key, args.issues_repo)
+        except Exception as e:
+            print(e)
+            exit(1)
