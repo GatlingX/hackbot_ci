@@ -50,11 +50,11 @@ runs:
       continue-on-error: true
       run: |
         python ${{ github.action_path }}/src/bot_api.py \
-          --api_key ${{ inputs.api_key }} \
-          --output ${{ inputs.output }} \
-          --generate_issues ${{ inputs.generate_issues }} \
-          --issues_repo ${{ inputs.issues_repo }} \
-          --github_api_key ${{ github.token }}
+          --api_key "${{ inputs.api_key }}" \
+          ${{ inputs.output != '' && format('--output "{0}"', inputs.output) }} \
+          ${{ inputs.generate_issues == 'true' && '--generate_issues true' }} \
+          ${{ inputs.generate_issues == 'true' && inputs.issues_repo != '' && format('--issues_repo "{0}"', inputs.issues_repo) }} \
+          ${{ inputs.generate_issues == 'true' && format('--github_api_key "{0}"', github.token) }}
 
     - name: Move logs
       shell: bash
