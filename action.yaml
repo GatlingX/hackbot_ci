@@ -53,7 +53,7 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        python -m pip install hackbot==0.1.1
+        python -m pip install hackbot==0.1.4
 
     - name: Hack the contract
       id: hack_contract
