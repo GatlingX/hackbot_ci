@@ -35,7 +35,7 @@ inputs:
   port:
     description: "The port of the hackbot server"
     required: false
-    default: "80"
+    default: "443"
 
 outputs:
   results:
@@ -53,38 +53,15 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        python -m pip install aiohttp requests jq pygithub
+        python -m pip install hackbot
 
     - name: Hack the contract
       id: hack_contract
       shell: bash
       continue-on-error: false
       run: |
-        echo "Running command: python ${{ github.action_path }}/src/bot_api.py \
-          --address ${{ inputs.address }} \
-          --port ${{ inputs.port }} \
-          --api_key '${{ inputs.api_key }}' \
-          --output ${{ inputs.output }} \
-          --generate_issues ${{ inputs.generate_issues }} \
-          --issues_repo ${{ inputs.issues_repo }} "
-        if [ ${{ inputs.generate_issues }} == "true" ]; then
-          python ${{ github.action_path }}/src/bot_api.py \
-            --address ${{ inputs.address }} \
-            --port ${{ inputs.port }} \
-            --api_key '${{ inputs.api_key }}' \
-            --output ${{ inputs.output }} \
-            --generate_issues ${{ inputs.generate_issues }} \
-            --issues_repo ${{ inputs.issues_repo }} \
-            --github_api_key ${{ inputs.github_token }}
-        else
-          python ${{ github.action_path }}/src/bot_api.py \
-            --address ${{ inputs.address }} \
-            --port ${{ inputs.port }} \
-            --api_key '${{ inputs.api_key }}' \
-            --output ${{ inputs.output }} \
-            --generate_issues ${{ inputs.generate_issues }} \
-            --issues_repo ${{ inputs.issues_repo }}
-        fi
+        echo "Running command: python -m hackbot --api-key '${{ inputs.api_key }}' --source '${{ github.workspace }}'"
+        python -m hackbot --api-key '${{ inputs.api_key }}' --source '${{ github.workspace }}'
 
     - name: Move logs
       shell: bash
