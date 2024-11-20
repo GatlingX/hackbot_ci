@@ -58,7 +58,7 @@ runs:
     - name: Hack the contract
       id: hack_contract
       shell: bash
-      continue-on-error: false
+      continue-on-error: true
       run: |
         echo "Running command: python -m hackbot run --api-key '${{ inputs.api_key }}' --source '${{ github.workspace }}' --address '${{ inputs.address }}' --port '${{ inputs.port }}' --output '${{ inputs.output }}' ${{ inputs.generate_issues == 'true' && format('--issues_repo {0} --github_api_key {1}', inputs.issues_repo, inputs.github_token) || '' }}"
         python -m hackbot run --api-key '${{ inputs.api_key }}' --source '${{ github.workspace }}' --address '${{ inputs.address }}' --port '${{ inputs.port }}' --output '${{ inputs.output }}' ${{ inputs.generate_issues == 'true' && format('--issues_repo {0} --github_api_key {1}', inputs.issues_repo, inputs.github_token) || '' }}
