@@ -26,8 +26,16 @@ inputs:
     description: 'The repository to generate issues in. It should be in the format of "username/repo"'
     required: false
   github_token:
-    description: "The GitHub token to use to authenticate with GitHub"
+    description: "The GitHub token to use to authenticate with GitHub, only needed if generate_issues is true"
     required: false
+  address:
+    description: "The address of the hackbot server"
+    required: false
+    default: "https://app.hackbot.org"
+  port:
+    description: "The port of the hackbot server"
+    required: false
+    default: "443"
 
 outputs:
   results:
@@ -40,30 +48,20 @@ runs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: "3.12"
+        python-version: "3.11.9"
 
     - name: Install dependencies
       shell: bash
       run: |
-        python -m pip install aiohttp requests jq pygithub
+        python -m pip install --upgrade hackbot
 
     - name: Hack the contract
       id: hack_contract
       shell: bash
       continue-on-error: true
       run: |
-        echo "Running command: python ${{ github.action_path }}/src/bot_api.py \
-          --api_key "${{ inputs.api_key }}" \
-          --output ${{ inputs.output }} \
-          --generate_issues ${{ inputs.generate_issues }} \
-          --issues_repo ${{ inputs.issues_repo }} \
-          --github_api_key TOKEN_HERE"
-        python ${{ github.action_path }}/src/bot_api.py \
-          --api_key "${{ inputs.api_key }}" \
-          --output ${{ inputs.output }} \
-          --generate_issues ${{ inputs.generate_issues }} \
-          --issues_repo ${{ inputs.issues_repo }} \
-          --github_api_key ${{ inputs.github_token }}
+        echo "Running command: python -m hackbot run --api-key '${{ inputs.api_key }}' --source '${{ github.workspace }}' --address '${{ inputs.address }}' --port '${{ inputs.port }}' --output '${{ inputs.output }}' ${{ inputs.generate_issues == 'true' && format('--issues_repo {0} --github_api_key {1}', inputs.issues_repo, inputs.github_token) || '' }}"
+        python -m hackbot run --api-key '${{ inputs.api_key }}' --source '${{ github.workspace }}' --address '${{ inputs.address }}' --port '${{ inputs.port }}' --output '${{ inputs.output }}' ${{ inputs.generate_issues == 'true' && format('--issues_repo {0} --github_api_key {1}', inputs.issues_repo, inputs.github_token) || '' }}
 
     - name: Move logs
       shell: bash
