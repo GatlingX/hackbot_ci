@@ -14,7 +14,7 @@ pip install hackbot
 ## Step 2
 
 
-Get a Hackbot API key from the [Hackbot website](https://hackbot.org), and set it as an environment variable `HACKBOT_API_KEY`.
+Get a Hackbot API key from the [Hackbot website](https://hackbot.co), and set it as an environment variable `HACKBOT_API_KEY`.
 
 ## Step 3
 

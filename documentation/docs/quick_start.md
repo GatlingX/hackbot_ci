@@ -69,7 +69,7 @@ contracts/ 📁
 
 ## Step 2: Get an API key
 
-Go to https://hackbot.org/dashboard/api-keys and click on "Create new secret Key". The website will generate an API key and the one-command installation link. 
+Go to https://hackbot.co/dashboard/api-keys and click on "Create new secret Key". The website will generate an API key and the one-command installation link. 
 
 
 <Tabs>

@@ -31,7 +31,7 @@ inputs:
   address:
     description: "The address of the hackbot server"
     required: false
-    default: "https://app.hackbot.org"
+    default: "https://app.hackbot.co"
   port:
     description: "The port of the hackbot server"
     required: false
